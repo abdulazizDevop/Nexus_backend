@@ -18,3 +18,7 @@ CELERY_TASK_EAGER_PROPAGATES = True
 
 # Sentry o'chirish
 SENTRY_DSN = None
+
+# Testlarda to'lov mantig'i tekshiriladi — demo-blok middleware o'chiq.
+# Demo-blokning o'zi tests/test_payments_demo.py da override bilan tekshiriladi.
+PAYMENTS_ENABLED = True

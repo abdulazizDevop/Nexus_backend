@@ -9,6 +9,9 @@ from .card import (
 from .condition import (
     MedicalCondition,
 )
+from .roadmap import (
+    RoadmapStep,
+)
 from .note import (
     MedicalNote,
     MedicalNoteImage,
@@ -26,6 +29,7 @@ from .analysis import (
 __all__ = [
     "MedicalCard",
     "MedicalCondition",
+    "RoadmapStep",
     "MedicalNote",
     "MedicalNoteImage",
     "Analysis",

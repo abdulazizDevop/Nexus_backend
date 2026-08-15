@@ -23,11 +23,13 @@ va braslet modullari olib tashlanib, o'rniga **oila a'zosi kuzatuvi** va
 | Health AI | Shifokor uchun kunlik AI hisobot (bemor dinamikasi) |
 | **Tracking AI** ⭐ | Bemor-markazli kunlik AI kuzatuv: xulosa, o'zgarishlar, tavsiyalar; kritik holatda bemor + shifokor + oila a'zosiga push |
 | **Family** ⭐ | Oila a'zosi bemorni kuzatadi: taklif → qabul → read-only kunlik hisobot |
+| **Retsept skan** ⭐ | Retsept qog'ozi rasmi → Gemini vision o'qiydi → bemor tasdiqlagach muolajalarga qo'shiladi |
+| **Navigator roadmap** ⭐ | Tashxisdan keyingi yo'l xaritasi: davrlar bo'yicha qadamlar, progress, odatlar |
 | Notifications | In-app feed + FCM/APNs push (app_scope bilan) |
 | Voice AI | Gemini Live — ovozli suhbat (server orqali o'tmaydi) |
 
 ⭐ — hackathon uchun yangi qo'shilgan modullar. API namunalari:
-[FAMILY_TRACKING_API.md](FAMILY_TRACKING_API.md).
+[NEW_FEATURES_API.md](NEW_FEATURES_API.md).
 
 ## Demo cheklovlari
 

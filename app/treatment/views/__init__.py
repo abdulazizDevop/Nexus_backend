@@ -13,10 +13,16 @@ from .doctor import (
 from .calorie import (
     DailyCalorieLimitViewSet,
 )
+from .prescription import (
+    PrescriptionScanViewSet,
+    PrescriptionUploadUrlView,
+)
 
 __all__ = [
     "TreatmentLogViewSet",
     "TreatmentViewSet",
     "DoctorTreatmentViewSet",
     "DailyCalorieLimitViewSet",
+    "PrescriptionScanViewSet",
+    "PrescriptionUploadUrlView",
 ]

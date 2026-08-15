@@ -191,6 +191,42 @@ def _health_lines(user, today, now) -> list[str]:
     return out
 
 
+def _tracking_line(user, today, now) -> list[str]:
+    """Oxirgi AI kuzatuv hisoboti (tracking_ai) — bemor so'rasa gapirish uchun."""
+    try:
+        from app.tracking_ai.models import AITrackingReport
+    except ImportError:  # app hali yo'q bo'lsa qolgan kontekst ishlayveradi
+        return []
+
+    report = (
+        AITrackingReport.objects.filter(patient=user)
+        .order_by("-period_start")
+        .first()
+    )
+    if not report:
+        return []
+    days_ago = (today - report.period_start).days
+    if days_ago > 2:
+        return []  # eski hisobot — bugungidek gapirmasin
+
+    when = {0: "bugungi", 1: "kechagi"}.get(days_ago, f"{days_ago} kun oldingi")
+    sev = {
+        "normal": "normal",
+        "attention": "e'tibor talab",
+        "critical": "JIDDIY",
+    }.get(report.severity, report.severity)
+    line = f"- AI kuzatuv ({when} hisobot, holat: {sev}): {report.summary[:200]}"
+    if report.adherence_percent is not None:
+        line += f" Muolaja intizomi: {report.adherence_percent}%."
+    out = [line]
+    if report.severity == "critical":
+        out.append(
+            "- MUHIM: AI kuzatuvda JIDDIY holat belgilangan — bemorga yumshoq, "
+            "lekin aniq qilib shifokorga murojaatni eslat."
+        )
+    return out
+
+
 def build_patient_context(user) -> str:
     """Bemor holati bloki (bo'sh bo'lsa '') — VAQT-XABARDOR."""
     now = timezone.localtime()  # settings TIME_ZONE = Asia/Tashkent
@@ -201,7 +237,7 @@ def build_patient_context(user) -> str:
     if name:
         lines.append(f"- Ism: {name}")
 
-    for section in (_diet_line, _treatment_line, _health_lines):
+    for section in (_diet_line, _treatment_line, _health_lines, _tracking_line):
         try:
             res = section(user, today, now)
         except Exception as exc:  # noqa: BLE001 — bir bo'lim xatosi qolganini buzmasin

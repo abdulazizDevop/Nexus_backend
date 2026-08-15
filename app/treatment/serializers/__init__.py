@@ -16,6 +16,13 @@ from .log import (
     TreatmentMarkSerializer,
     TreatmentStatsSerializer,
 )
+from .prescription import (
+    PrescriptionAnalyzeSerializer,
+    PrescriptionConfirmSerializer,
+    PrescriptionItemSerializer,
+    PrescriptionScanSerializer,
+    PrescriptionUploadUrlSerializer,
+)
 from .common import _validate_doctor_patient_link  # noqa: F401
 
 __all__ = [
@@ -26,4 +33,9 @@ __all__ = [
     "TreatmentLogSerializer",
     "TreatmentMarkSerializer",
     "TreatmentStatsSerializer",
+    "PrescriptionUploadUrlSerializer",
+    "PrescriptionAnalyzeSerializer",
+    "PrescriptionItemSerializer",
+    "PrescriptionConfirmSerializer",
+    "PrescriptionScanSerializer",
 ]

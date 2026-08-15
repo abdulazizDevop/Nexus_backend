@@ -6,6 +6,7 @@ from rest_framework import status
 from tests.base import BaseAPITestCase
 
 
+@override_settings(PAYMENTS_ENABLED=False)
 class PaymentsDemoModeTests(BaseAPITestCase):
     """Demo rejimda to'lov yozuv endpointlari 503, o'qish ishlaydi"""
 

@@ -13,8 +13,18 @@ from .catalog import (
 )
 from .conditions import MedicalConditionViewSet
 from .notes import MedicalNoteImageUploadUrlView, MedicalNoteViewSet
+from .roadmap import (
+    ActiveRoadmapView,
+    RoadmapSetupView,
+    RoadmapStepCompleteView,
+    RoadmapStepUncompleteView,
+)
 
 __all__ = [
+    "ActiveRoadmapView",
+    "RoadmapSetupView",
+    "RoadmapStepCompleteView",
+    "RoadmapStepUncompleteView",
     "MedicalCardViewSet",
     "MedicalCardSummaryView",
     "MedicalConditionViewSet",

@@ -10,9 +10,13 @@ from .treatment import (
 from .calorie import (
     DailyCalorieLimit,
 )
+from .prescription import (
+    PrescriptionScan,
+)
 
 __all__ = [
     "Treatment",
     "TreatmentLog",
     "DailyCalorieLimit",
+    "PrescriptionScan",
 ]

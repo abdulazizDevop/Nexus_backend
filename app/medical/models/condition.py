@@ -34,6 +34,18 @@ class MedicalCondition(models.Model):
     severity = models.CharField(max_length=10, choices=Severity.choices, blank=True)
     discovered_at = models.DateField(null=True, blank=True)
     note = models.TextField(blank=True)
+    # --- Navigator (tashxisdan keyingi yo'l xaritasi) maydonlari ---
+    icd10 = models.CharField(
+        max_length=10, blank=True, help_text="ICD-10 kodi (masalan I10)"
+    )
+    plain_explanation = models.TextField(
+        blank=True,
+        help_text="Kasallikning oddiy tildagi tushuntirishi (bemorga ko'rsatiladi)",
+    )
+    is_active = models.BooleanField(
+        default=False,
+        help_text="Navigator hozir shu tashxis bo'yicha yo'l xaritasi yuritayaptimi",
+    )
     added_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
