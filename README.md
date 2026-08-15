@@ -24,7 +24,7 @@ va braslet modullari olib tashlanib, o'rniga **oila a'zosi kuzatuvi** va
 | **Tracking AI** ⭐ | Bemor-markazli kunlik AI kuzatuv: xulosa, o'zgarishlar, tavsiyalar; kritik holatda bemor + shifokor + oila a'zosiga push |
 | **Family** ⭐ | Oila a'zosi bemorni kuzatadi: taklif → qabul → read-only kunlik hisobot |
 | **Retsept skan** ⭐ | Retsept qog'ozi rasmi → Gemini vision o'qiydi → bemor tasdiqlagach muolajalarga qo'shiladi |
-| **Navigator roadmap** ⭐ | Tashxisdan keyingi yo'l xaritasi: davrlar bo'yicha qadamlar, progress, odatlar |
+| **Navigator roadmap** ⭐ | Kontrakt bo'yicha to'liq: roadmap, from-image, triage, AI chat |
 | Notifications | In-app feed + FCM/APNs push (app_scope bilan) |
 | Voice AI | Gemini Live — ovozli suhbat (server orqali o'tmaydi) |
 

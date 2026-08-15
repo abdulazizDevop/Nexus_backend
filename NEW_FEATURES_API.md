@@ -246,63 +246,34 @@ gapiradi; hisobotda JIDDIY holat bo'lsa shifokorga murojaatni eslatadi.
 
 ---
 
-## Navigator yo'l xaritasi — `/api/v1/medical/roadmap/`
+## AI Navigator — `/api/v1/navigator/`
 
-Tashxisdan keyingi qadam-baqadam yo'l xaritasi (konseptdagi S3/S4 ekranlar
-backend'i). Tashxis `MedicalCondition`da (`icd10`, `plain_explanation`,
-`is_active` maydonlari qo'shildi), qadamlar `RoadmapStep`da.
+**To'liq kontrakt: [docs/ai_navigator_api_contract.md](docs/ai_navigator_api_contract.md)**
+(mobil jamoa bilan shartnoma — request/response'lar aynan o'sha hujjatdagidek).
+Backend to'liq implementatsiya qildi:
 
-### 1. O'rnatish (tashxis + qadamlar bitta so'rovda)
+| Endpoint | Holat | Izoh |
+|----------|-------|------|
+| `GET /navigator/diagnoses/` | ✅ | Paginatsiyalangan ro'yxat + roadmap_progress |
+| `GET /navigator/diagnoses/{id}/` | ✅ | Tashxis + to'liq roadmap (what_to_watch, red_flags) |
+| `GET /navigator/roadmap/active/` | ✅ 🔴 | Home ekrani; aktiv yo'q → `{"diagnosis": null}` |
+| `POST /navigator/steps/{id}/complete/` | ✅ 🔴 | done + keyingi locked → current, `unlocked_step_ids` |
+| `POST /navigator/chat/` | ✅ 🟠 | Kontekstni backend yig'adi (§11: ism/telefon uzatilmaydi), kunlik limit 30 |
+| `POST /navigator/diagnoses/from-image/` | ✅ 🟠 | multipart rasm → Gemini vision → tashxis + roadmap + `extraction`; rasm SAQLANMAYDI |
+| `POST /navigator/diagnoses/` | ✅ | Qo'lda kiritish → AI roadmap quradi (dori qadamsiz — keys §9) |
+| `POST /navigator/triage/` | ✅ 🟡 | Simptom → urgency + mutaxassisliklar + platformadagi shifokorlar |
 
-```
-POST /api/v1/medical/roadmap/setup/
-{
-  "condition": {
-    "name": "Arterial gipertoniya", "icd10": "I10", "type": "chronic",
-    "plain_explanation": "Qon bosimining doimiy yuqori bo'lishi..."
-  },
-  "steps": [
-    { "period": "first_week", "order": 1, "title": "Kardiolog qabuliga yoziling",
-      "specialist": "Kardiolog", "description": "Bosim yozuvlaringizni olib boring." },
-    { "period": "ongoing", "order": 1, "title": "Kunlik bosim nazorati" }
-  ]
-}
-```
-`period`: `first_week` | `first_month` | `ongoing` (doimiy = odat, yopilmaydi).
-**201** — to'liq roadmap payload (2-band formati). Avvalgi aktiv tashxis
-avtomatik deaktiv bo'ladi (qadamlari tarixda qoladi).
+Model: tashxis = `MedicalCondition` (+`icd10`, `plain_explanation`, `is_active`,
+`source`, `what_to_watch`, `red_flags`, `extraction`), qadamlar = `RoadmapStep`
+(`type`: medication/analysis/consultation/lifestyle/checkup/education;
+`status`: done/current/locked/skipped — ketma-ket ochiladi; `payload` tur-ga
+bog'liq, kontrakt §2). Xatolar kontrakt §10 formatida:
+`{"detail": "machine_code", "message": "matn"}` (`document_unreadable` 422,
+`ai_unavailable` 503, `daily_limit_exceeded` 429).
 
-### 2. Aktiv yo'l xaritasi
-
-```
-GET /api/v1/medical/roadmap/active/
-```
-**200**:
-```json
-{
-  "condition": { "id": 5, "name": "Arterial gipertoniya", "icd10": "I10",
-                 "plain_explanation": "...", "is_active": true },
-  "periods": [
-    { "period": "first_week", "period_label": "Birinchi hafta",
-      "steps": [ { "id": 11, "title": "Kardiolog qabuliga yoziling",
-                   "specialist": "Kardiolog", "status": "pending",
-                   "is_habit": false, "order": 1 } ] },
-    { "period": "first_month", "period_label": "Birinchi oy", "steps": [] },
-    { "period": "ongoing", "period_label": "Doimiy", "steps": [] }
-  ],
-  "progress": { "completed": 0, "total": 3, "percent": 0, "habits": 1 }
-}
-```
-**404** — aktiv tashxis yo'q (avval setup qilinadi).
-
-### 3. Qadamni bajarish / bekor qilish
-
-```
-POST /api/v1/medical/roadmap/steps/11/complete/    → 200 {step, progress}
-POST /api/v1/medical/roadmap/steps/11/uncomplete/  → 200 {step, progress}
-```
-Idempotent. `progress` faqat belgilanadigan qadamlarni sanaydi (odatlar
-`habits` sonida alohida). **400** — doimiy (odat) qadamni yopishga urinish.
+AI qoidalari: tashxis QO'YMAYDI (tayyor tashxisdan keyin yo'naltiradi), manual
+tashxisda dori qadami YARATMAYDI (faqat hujjatda yozilgan dorilar from-image'da),
+kontekstga ism/telefon uzatilmaydi.
 
 ---
 

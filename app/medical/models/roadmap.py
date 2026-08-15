@@ -5,23 +5,26 @@ from .condition import MedicalCondition
 
 
 class RoadmapStep(models.Model):
-    """Tashxisdan keyingi yo'l xaritasi qadami (Sog'liq Navigator).
+    """Navigator yo'l xaritasi qadami (ai_navigator_api_contract.md §0, §2).
 
-    Har qadam bitta MedicalCondition (tashxis)ga bog'lanadi. Davrlar:
-    birinchi hafta / birinchi oy / doimiy. "Doimiy" qadamlar — odatlar,
-    ular "bajarildi" deb yopilmaydi (complete → 400).
-    Dori qadami ixtiyoriy ravishda Treatment'ga bog'lanishi mumkin
-    (muolaja belgilansa progress muolaja orqali kuzatiladi).
+    Qadamlar KETMA-KET: `order` bo'yicha bittasi `current`, keyingilari
+    `locked` — oldingi qadam bajarilgach ochiladi. Har qadam tur (`type`)
+    bo'yicha mobil tomonda alohida harakatga ulanadi (payload orqali).
     """
 
-    class Period(models.TextChoices):
-        FIRST_WEEK = "first_week", "Birinchi hafta"
-        FIRST_MONTH = "first_month", "Birinchi oy"
-        ONGOING = "ongoing", "Doimiy"
+    class Type(models.TextChoices):
+        MEDICATION = "medication", "Dori qabul qilish"
+        ANALYSIS = "analysis", "Analiz topshirish"
+        CONSULTATION = "consultation", "Shifokorga murojaat"
+        LIFESTYLE = "lifestyle", "Turmush tarzi / parhez"
+        CHECKUP = "checkup", "Nazorat ko'rigi"
+        EDUCATION = "education", "Tushuntirish / o'qish"
 
     class Status(models.TextChoices):
-        PENDING = "pending", "Bajarilmagan"
-        COMPLETED = "completed", "Bajarilgan"
+        DONE = "done", "Bajarilgan"
+        CURRENT = "current", "Hozir bajarilishi kerak"
+        LOCKED = "locked", "Yopiq"
+        SKIPPED = "skipped", "O'tkazib yuborilgan"
 
     condition = models.ForeignKey(
         MedicalCondition,
@@ -40,13 +43,20 @@ class RoadmapStep(models.Model):
         null=True,
         blank=True,
     )
-    period = models.CharField(max_length=15, choices=Period.choices)
-    order = models.PositiveSmallIntegerField(default=0)
+    order = models.PositiveSmallIntegerField(default=1)
+    type = models.CharField(max_length=15, choices=Type.choices)
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.LOCKED
+    )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    specialist = models.CharField(
-        max_length=100, blank=True,
-        help_text="Mutaxassis chipi (Kardiolog, Laboratoriya...). Bo'sh = o'z-o'ziga qadam",
+    body = models.TextField(
+        blank=True, help_text="education qadam uchun to'liq matn (sheet'da ochiladi)"
+    )
+    due_date = models.DateField(null=True, blank=True)
+    payload = models.JSONField(
+        null=True, blank=True,
+        help_text="Tur-ga bog'liq ma'lumot (kontrakt §2 payload qoidalari)",
     )
     treatment = models.ForeignKey(
         "treatment.Treatment",
@@ -54,19 +64,16 @@ class RoadmapStep(models.Model):
         null=True,
         blank=True,
         related_name="roadmap_steps",
-        help_text="Dori qadami muolajaga bog'langan bo'lsa",
-    )
-    status = models.CharField(
-        max_length=10, choices=Status.choices, default=Status.PENDING
+        help_text="medication qadamidan yaratilgan muolaja (bo'lsa)",
     )
     completed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["period", "order", "id"]
+        ordering = ["order", "id"]
         indexes = [
             models.Index(fields=["user", "status"]),
-            models.Index(fields=["condition", "period"]),
+            models.Index(fields=["condition", "order"]),
         ]
 
     def save(self, *args, **kwargs):
@@ -75,10 +82,5 @@ class RoadmapStep(models.Model):
         _autofill_patient_profile(self, "user")
         super().save(*args, **kwargs)
 
-    @property
-    def is_habit(self) -> bool:
-        """Doimiy qadam — odat, "bajarildi" deb yopilmaydi."""
-        return self.period == self.Period.ONGOING
-
     def __str__(self):
-        return f"[{self.get_period_display()}] {self.title}"
+        return f"#{self.order} [{self.get_type_display()}] {self.title}"

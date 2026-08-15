@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "app.analytics",
     "app.family",
     "app.tracking_ai",
+    "app.navigator",
     # core — i18n helpers va management commands uchun (translate_existing va h.k.)
     "core",
     # paytechuz — Payme/Click/Uzum integratsiyasi (Transaction modeli)

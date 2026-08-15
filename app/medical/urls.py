@@ -2,7 +2,6 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
-    ActiveRoadmapView,
     AnalysisIndicatorViewSet,
     AnalysisPreparationViewSet,
     AnalysisTypeViewSet,
@@ -14,9 +13,6 @@ from .views import (
     MedicalNoteAIDraftView,
     MedicalNoteImageUploadUrlView,
     MedicalNoteViewSet,
-    RoadmapSetupView,
-    RoadmapStepCompleteView,
-    RoadmapStepUncompleteView,
 )
 
 router = DefaultRouter()
@@ -59,19 +55,6 @@ urlpatterns = [
         "patients/<int:patient_id>/card-summary/",
         MedicalCardSummaryView.as_view(),
         name="medical-card-summary",
-    ),
-    # Navigator yo'l xaritasi
-    path("roadmap/setup/", RoadmapSetupView.as_view(), name="roadmap-setup"),
-    path("roadmap/active/", ActiveRoadmapView.as_view(), name="roadmap-active"),
-    path(
-        "roadmap/steps/<int:pk>/complete/",
-        RoadmapStepCompleteView.as_view(),
-        name="roadmap-step-complete",
-    ),
-    path(
-        "roadmap/steps/<int:pk>/uncomplete/",
-        RoadmapStepUncompleteView.as_view(),
-        name="roadmap-step-uncomplete",
     ),
     path("", include(router.urls)),
 ]

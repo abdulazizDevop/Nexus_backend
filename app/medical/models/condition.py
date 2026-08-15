@@ -35,6 +35,12 @@ class MedicalCondition(models.Model):
     discovered_at = models.DateField(null=True, blank=True)
     note = models.TextField(blank=True)
     # --- Navigator (tashxisdan keyingi yo'l xaritasi) maydonlari ---
+    class DiagnosisSource(models.TextChoices):
+        DOCTOR = "doctor", "Platformadagi shifokor"
+        DOCUMENT = "document", "Tashxis qog'ozi (AI o'qidi)"
+        MANUAL = "manual", "Bemor o'zi kiritdi"
+        INTEGRATION = "integration", "Tashqi tizim"
+
     icd10 = models.CharField(
         max_length=10, blank=True, help_text="ICD-10 kodi (masalan I10)"
     )
@@ -45,6 +51,25 @@ class MedicalCondition(models.Model):
     is_active = models.BooleanField(
         default=False,
         help_text="Navigator hozir shu tashxis bo'yicha yo'l xaritasi yuritayaptimi",
+    )
+    source = models.CharField(
+        max_length=15,
+        choices=DiagnosisSource.choices,
+        default=DiagnosisSource.MANUAL,
+        help_text="Tashxis qayerdan keldi (navigator kontrakti: DiagnosisSource)",
+    )
+    what_to_watch = models.JSONField(
+        default=list, blank=True,
+        help_text="Nimalarni kuzatish kerak — string ro'yxati",
+    )
+    red_flags = models.JSONField(
+        default=list, blank=True,
+        help_text="Xavfli belgilar [{text, action, severity}]",
+    )
+    extraction = models.JSONField(
+        null=True, blank=True,
+        help_text="from-image: AI o'qish natijasi {confidence, recognized_text, needs_review}. "
+                  "Rasm o'zi SAQLANMAYDI (maxfiylik).",
     )
     added_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

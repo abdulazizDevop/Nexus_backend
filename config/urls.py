@@ -117,6 +117,7 @@ urlpatterns = [
     path("api/v1/health-ai/", include("app.health_ai.urls")),
     path("api/v1/family/", include("app.family.urls")),
     path("api/v1/tracking-ai/", include("app.tracking_ai.urls")),
+    path("api/v1/navigator/", include("app.navigator.urls")),
     path("api/v1/pharmacy/", include("app.pharmacy.urls")),
     path("api/v1/voice/", include("app.voice_ai.urls")),
     path("api/v1/translate/", translate_view, name="translate"),
