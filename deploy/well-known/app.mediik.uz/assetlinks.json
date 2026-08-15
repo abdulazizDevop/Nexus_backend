@@ -1,0 +1,22 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mediik.patient",
+      "sha256_cert_fingerprints": [
+        "81:F5:BC:6C:F1:43:CE:89:51:71:81:85:02:B2:7C:19:59:5D:DE:5B:39:60:92:2A:84:96:C4:29:61:2A:45:D2"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mediik.health",
+      "sha256_cert_fingerprints": [
+        "17:12:6A:54:BF:AA:9A:4E:B8:2F:19:16:41:EF:A5:6F:61:56:31:9C:09:DE:12:C2:C7:2C:DE:A7:C8:A3:2F:0B"
+      ]
+    }
+  }
+]

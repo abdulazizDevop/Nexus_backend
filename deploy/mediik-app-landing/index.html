@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mediik — ilovani oching</title>
+  <!--
+    Store-fallback landing (app.mediik.uz).
+    Bu sahifa FAQAT app o'rnatilmagan/verified bo'lmaganda ko'rinadi — app bor bo'lsa
+    OS Universal/App Link'ni ushlab, brauzergacha yetib kelmaydi.
+    Vazifa: UA bo'yicha to'g'ri store'ga yo'naltirish.
+
+    ⚠️ APPSTORE_ID — App Store raqamli ID (App Store Connect → App → General → Apple ID).
+       Hozir placeholder; deploy'dan oldin almashtiring.
+  -->
+  <style>
+    body { font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+           background: #0f1020; color: #fff; margin: 0; min-height: 100vh;
+           display: flex; align-items: center; justify-content: center; text-align: center; }
+    .card { padding: 32px 24px; max-width: 380px; }
+    h1 { font-size: 22px; margin: 16px 0 8px; }
+    p { color: #b9b9d0; font-size: 15px; line-height: 1.5; }
+    a.btn { display: inline-block; margin-top: 20px; padding: 14px 28px; border-radius: 14px;
+            background: #2ee5c5; color: #07111f; font-weight: 700; text-decoration: none; }
+    .logo { font-size: 40px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🩺</div>
+    <h1>Mediik ilovasini oching</h1>
+    <p id="msg">Ilovaga yo'naltirilmoqda…</p>
+    <a id="storeBtn" class="btn" href="#">Ilovani yuklab olish</a>
+  </div>
+
+  <script>
+    (function () {
+      var APPSTORE_ID = "6762194727";
+      var APPSTORE_URL = "https://apps.apple.com/uz/app/id" + APPSTORE_ID;
+      var PLAY_PKG = "com.mediik.health";
+
+      // /ref/<code> dan referral kodni olamiz (Play referrer + post-install uchun)
+      var m = location.pathname.match(/\/ref\/([^/?#]+)/);
+      var code = m ? m[1] : "";
+
+      var PLAY_URL = "https://play.google.com/store/apps/details?id=" + PLAY_PKG +
+                     (code ? "&referrer=" + encodeURIComponent("ref=" + code) : "");
+
+      var ua = navigator.userAgent || "";
+      var isIOS = /iPhone|iPad|iPod/i.test(ua);
+      var isAndroid = /Android/i.test(ua);
+
+      var btn = document.getElementById("storeBtn");
+      var msg = document.getElementById("msg");
+
+      if (isIOS) {
+        btn.href = APPSTORE_URL;
+        location.replace(APPSTORE_URL);
+      } else if (isAndroid) {
+        btn.href = PLAY_URL;
+        location.replace(PLAY_URL);
+      } else {
+        // Desktop / boshqa — store'ga uloqtirmaymiz, ko'rsatma beramiz
+        msg.textContent = "Iltimos, ushbu havolani telefoningizda (Mediik ilovasi o'rnatilgan) oching.";
+        btn.href = "https://mediik.uz";
+        btn.textContent = "Mediik haqida";
+      }
+    })();
+  </script>
+</body>
+</html>

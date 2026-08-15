@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.mediik.doctor",
+      "sha256_cert_fingerprints": [
+        "F8:2F:CB:38:CD:03:F7:70:1C:E8:BF:89:2E:6E:CD:9C:3A:93:C1:B3:3E:58:D1:22:33:9E:B6:DC:EE:66:C4:0B"
+      ]
+    }
+  }
+]

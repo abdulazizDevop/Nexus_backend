@@ -1,0 +1,108 @@
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             daphne -b 0.0.0.0 -p 8000 --access-log /dev/null config.asgi:application"
+    volumes:
+      - app_data:/app/data
+      - app_static:/app/staticfiles
+      - ./firebase.json:/app/firebase.json:ro
+      - ./secrets:/app/secrets:ro
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: web
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  bot:
+    build: .
+    command: python manage.py run_bot
+    volumes:
+      - app_data:/app/data
+      - ./firebase.json:/app/firebase.json:ro
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: bot
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  celery:
+    build: .
+    command: celery -A config worker -l info --concurrency=2
+    volumes:
+      - app_data:/app/data
+      - ./firebase.json:/app/firebase.json:ro
+      - ./secrets:/app/secrets:ro
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: celery
+    depends_on:
+      - web
+      - redis
+    restart: unless-stopped
+
+  # Ovozli xabar transcode (web webm/opus → m4a) uchun alohida worker.
+  # I/O-bound (S3 download/upload + ffmpeg) — concurrency 8. Faqat `transcode`
+  # queue'ni eshitadi, shunda og'ir ffmpeg ishi chat push/payment tasklarini
+  # bloklamaydi. ffmpeg image'da (Dockerfile) o'rnatilgan.
+  celery-transcode:
+    build: .
+    command: celery -A config worker -l info -Q transcode --concurrency=8
+    volumes:
+      - app_data:/app/data
+      - ./firebase.json:/app/firebase.json:ro
+      - ./secrets:/app/secrets:ro
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: celery-transcode
+    depends_on:
+      - web
+      - redis
+    restart: unless-stopped
+
+  celery-beat:
+    build: .
+    command: celery -A config beat -l info
+    volumes:
+      - app_data:/app/data
+      - ./firebase.json:/app/firebase.json:ro
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: beat
+    depends_on:
+      - celery
+    restart: unless-stopped
+
+  flower:
+    build: .
+    command: celery -A config flower --port=5555 --basic_auth=${FLOWER_USER:-admin}:${FLOWER_PASSWORD:-mediik2026}
+    ports:
+      - "127.0.0.1:5555:5555"
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: flower
+    depends_on:
+      - celery
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  app_data:
+  app_static:
+  redis_data:

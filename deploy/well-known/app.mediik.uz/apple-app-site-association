@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "7SG7F9BAFT.com.mediik.patient",
+        "paths": [
+          "/payment/return",
+          "/payment/cancel",
+          "/appointment/*",
+          "/diet/conversation/*",
+          "/chat/*",
+          "/ref/*",
+          "/home"
+        ]
+      }
+    ]
+  }
+}
