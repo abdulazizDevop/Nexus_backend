@@ -31,12 +31,16 @@ class Command(BaseCommand):
 
         phone = (o.get("phone") or "").strip().lstrip("+").replace(" ", "") or None
 
+        # --phone yolg'iz berilsa — o'sha shifokorning hammasini tasdiqlaymiz.
+        if phone and not (o["list"] or o["tariffs"] or o["consultations"]):
+            o["all"] = True
+
         if o["list"] or not (o["all"] or o["tariffs"] or o["consultations"]):
             self._list(DoctorTariff, DoctorProfile, phone)
             if o["list"]:
                 return
             raise CommandError(
-                "Nima qilishni tanlang: --all | --tariffs | --consultations"
+                "Nima qilishni tanlang: --all | --tariffs | --consultations | --phone <raqam>"
             )
 
         if o["all"] or o["tariffs"]:
