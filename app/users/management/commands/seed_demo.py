@@ -137,6 +137,8 @@ class Command(BaseCommand):
                     "consultation_enabled": True,
                     "consultation_price": Decimal(price),
                     "consultation_duration_min": 30,
+                    # Moderatsiyadan o'tgan holatda — demo'da darhol booking ochiq
+                    "consultation_status": DoctorProfile.ConsultationStatus.APPROVED,
                 },
             )
             return profile
