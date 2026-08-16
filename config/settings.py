@@ -224,6 +224,10 @@ _PROD_ORIGINS = [
     "https://mediik.uz",
     "https://www.mediik.uz",
     "https://account.mediik.uz",
+    # Sog'liq Navigator web (Firebase Hosting ikkita domen beradi) + asosiy domen
+    "https://mediik-42b6b.web.app",
+    "https://mediik-42b6b.firebaseapp.com",
+    "https://medway.mediik.uz",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = DEBUG
@@ -280,7 +284,11 @@ if not DEBUG and not TESTING:
 
     # CSRF trusted origins — admin paneli session uchun. CORS_ALLOWED_ORIGINS
     # bilan bir xil ro'yxat (_PROD_ORIGINS), lekin Django CSRF alohida talab qiladi.
-    CSRF_TRUSTED_ORIGINS = list(_PROD_ORIGINS)
+    # Env orqali qo'shilgan origin'lar ham ishonchli bo'lsin (frontend deploy
+    # manzili .env'dan kelsa CSRF'ga qo'lda qo'shish talab qilinmasin).
+    CSRF_TRUSTED_ORIGINS = list(
+        dict.fromkeys([*_PROD_ORIGINS, *CORS_ALLOWED_ORIGINS])
+    )
 
 
 # Swagger / drf-spectacular
